@@ -550,9 +550,9 @@ How can I assist you today?`
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="chat-container flex flex-col h-full">
       {/* Header with Breadcrumbs and Search */}
-      <div className="p-4 border-b bg-background/80 backdrop-blur-sm space-y-4">
+      <div className="chat-header p-4 space-y-4">
         {/* Breadcrumbs and Context */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -812,10 +812,10 @@ How can I assist you today?`
                 message.role === 'user' ? 'max-w-[80%] md:max-w-[70%]' : 'max-w-[85%] md:max-w-[80%]'
               )}>
                 <Card className={cn(
-                  'p-4 shadow-sm',
+                  'p-4 shadow-sm transition-theme',
                   message.role === 'user' 
-                    ? 'bg-primary text-primary-foreground ml-auto' 
-                    : 'bg-card border'
+                    ? 'chat-message-user ml-auto' 
+                    : 'chat-message-assistant border'
                 )}>
                   <div className={cn(
                     'max-w-none leading-relaxed',
@@ -902,7 +902,7 @@ How can I assist you today?`
       </ScrollArea>
 
       {/* Input Area */}
-      <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="border-t transition-theme">
         <form onSubmit={handleSubmit} className="p-4">
           <div className="max-w-4xl mx-auto space-y-4">
             <div className="flex gap-2">
@@ -928,7 +928,7 @@ How can I assist you today?`
                     }
                   }}
                   placeholder="Type your message... (Shift+Enter for new line)"
-                  className="min-h-[60px] max-h-[200px] pr-20 sm:pr-12 resize-none text-base"
+                  className="chat-input transition-theme min-h-[60px] max-h-[200px] pr-20 sm:pr-12 resize-none text-base"
                   disabled={isLoading}
                 />
                 

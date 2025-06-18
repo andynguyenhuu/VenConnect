@@ -13,8 +13,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { MobileSidebar } from './sidebar'
-import { Moon, Sun, Globe, User, LogOut, Settings } from 'lucide-react'
-import { useTheme } from 'next-themes'
+import { ThemeToggle } from '@/components/theme-toggle'
+import { Globe, User, LogOut, Settings } from 'lucide-react'
 
 interface HeaderProps {
   user?: {
@@ -25,7 +25,6 @@ interface HeaderProps {
 }
 
 export function Header({ user }: HeaderProps) {
-  const { theme, setTheme } = useTheme()
   const [region, setRegion] = useState<'AU' | 'VN'>('AU')
   const [mounted, setMounted] = useState(false)
 
@@ -53,7 +52,7 @@ export function Header({ user }: HeaderProps) {
   if (!mounted) return null
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-theme">
       <div className="flex h-16 items-center px-4 gap-4">
         <MobileSidebar />
         
@@ -86,15 +85,7 @@ export function Header({ user }: HeaderProps) {
             </DropdownMenu>
 
             {/* Theme Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            >
-              <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-              <span className="sr-only">Toggle theme</span>
-            </Button>
+            <ThemeToggle />
 
             {/* User Menu */}
             <DropdownMenu>

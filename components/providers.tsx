@@ -21,7 +21,9 @@ export function Providers({ children, ...props }: ThemeProviderProps) {
         attribute="class"
         defaultTheme="system"
         enableSystem
-        disableTransitionOnChange
+        themes={['light', 'dark', 'system']}
+        forcedTheme={undefined}
+        storageKey="venconnect-theme"
         {...props}
       >
         {children}

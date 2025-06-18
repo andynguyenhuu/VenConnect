@@ -45,11 +45,11 @@ export function Sidebar({ className }: SidebarProps) {
 
   return (
     <div className={cn(
-      'relative flex h-full flex-col border-r bg-background transition-all duration-300 ease-in-out', 
+      'sidebar relative flex h-full flex-col transition-all duration-300 ease-in-out', 
       collapsed ? 'w-16' : 'w-64',
       className
     )}>
-      <div className="flex h-16 items-center justify-between border-b px-4">
+      <div className="flex h-16 items-center justify-between border-b px-4 transition-theme">
         <Link href="/" className="flex items-center space-x-2 min-w-0">
           <Globe className="h-6 w-6 text-primary flex-shrink-0" />
           <span className={cn(
@@ -75,8 +75,9 @@ export function Sidebar({ className }: SidebarProps) {
               <Button
                 variant={pathname === item.href ? 'secondary' : 'ghost'}
                 className={cn(
-                  'w-full transition-all duration-200',
-                  collapsed ? 'justify-center px-2' : 'justify-start'
+                  'w-full transition-all duration-200 sidebar-nav-item',
+                  collapsed ? 'justify-center px-2' : 'justify-start',
+                  pathname === item.href && 'active'
                 )}
                 asChild
               >

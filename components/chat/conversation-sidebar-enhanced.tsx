@@ -213,11 +213,11 @@ export function ConversationSidebarEnhanced({
 
   return (
     <div className={cn(
-      "flex flex-col h-full bg-card/50 backdrop-blur-sm border-l transition-all duration-200",
+      "conversation-list flex flex-col h-full backdrop-blur-sm transition-all duration-200",
       getWidth()
     )}>
       {/* Header */}
-      <div className={cn("border-b border-border/20", densityClasses.header)}>
+      <div className={cn("border-b border-border/20 transition-theme", densityClasses.header)}>
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-sm text-foreground/90">Conversations</h2>
         </div>
@@ -407,9 +407,9 @@ function ConversationItem({
   if (viewMode === 'cards') {
     return (
       <div className={cn(
-        'group relative rounded-lg border bg-card hover:bg-accent/70 cursor-pointer transition-all duration-150',
+        'conversation-item group relative border cursor-pointer transition-all duration-150',
         getPadding(),
-        isSelected ? 'bg-primary/10 border-primary/20 shadow-sm' : 'hover:border-border/30'
+        isSelected ? 'selected' : ''
       )}
       onClick={bulkMode ? onToggleCheck : onSelect}>
         <div className="space-y-2">
@@ -456,11 +456,9 @@ function ConversationItem({
   return (
     <div
       className={cn(
-        'group relative rounded-lg hover:bg-accent/70 cursor-pointer transition-all duration-150 touch-manipulation border',
+        'conversation-item group relative cursor-pointer transition-all duration-150 touch-manipulation border',
         getPadding(),
-        isSelected 
-          ? 'bg-primary/10 border-primary/20 shadow-sm' 
-          : 'bg-transparent border-transparent hover:border-border/30'
+        isSelected ? 'selected' : ''
       )}
       onClick={bulkMode ? onToggleCheck : onSelect}
     >
