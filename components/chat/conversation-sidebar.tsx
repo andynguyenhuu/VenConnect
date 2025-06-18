@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -12,7 +12,9 @@ import {
   Clock,
   MoreVertical,
   Trash2,
-  Edit2
+  Edit2,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -63,6 +65,12 @@ export function ConversationSidebar() {
   const [conversations, setConversations] = useState(mockConversations)
   const [selectedId, setSelectedId] = useState('1')
   const [searchQuery, setSearchQuery] = useState('')
+  const [mounted, setMounted] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const filteredConversations = conversations.filter(conv =>
     conv.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -90,106 +98,171 @@ export function ConversationSidebar() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-muted/30">
+    <div className={cn(
+      "flex flex-col h-full bg-card/50 backdrop-blur-sm border-l transition-all duration-200",
+      isCollapsed ? "w-16" : "w-80"
+    )}>
       {/* Header */}
-      <div className="p-4 space-y-4">
-        <Button 
-          className="w-full justify-start" 
-          onClick={handleNewConversation}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          New Chat
-        </Button>
-        
-        <div className="relative">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search conversations..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8"
-          />
+      <div className="p-3 space-y-3 border-b border-border/20">
+        <div className="flex items-center justify-between">
+          {!isCollapsed && (
+            <h2 className="font-semibold text-sm text-foreground/90">Conversations</h2>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 hover:bg-accent"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+          </Button>
         </div>
+        
+        {!isCollapsed && (
+          <>
+            <Button 
+              className="w-full justify-start text-sm h-9 font-medium" 
+              onClick={handleNewConversation}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              New Chat
+            </Button>
+            
+            <div className="relative">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground/70" />
+              <Input
+                placeholder="Search conversations..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 text-sm h-9 bg-background/50 border-border/40 focus:border-primary/50"
+              />
+            </div>
+          </>
+        )}
+        {isCollapsed && (
+          <Button 
+            className="w-full justify-center" 
+            onClick={handleNewConversation}
+            size="icon"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        )}
       </div>
 
       {/* Conversations List */}
       <ScrollArea className="flex-1 px-2">
-        <div className="space-y-1 pb-4">
+        <div className="space-y-1 py-2">
+          {filteredConversations.length === 0 && (
+            <div className="px-3 py-8 text-center">
+              <MessageSquare className="h-8 w-8 mx-auto mb-2 text-muted-foreground/50" />
+              <p className="text-sm text-muted-foreground">
+                {searchQuery ? 'No conversations found' : 'No conversations yet'}
+              </p>
+            </div>
+          )}
+          
           {filteredConversations.map((conversation) => (
             <div
               key={conversation.id}
               className={cn(
-                'group relative rounded-lg p-3 hover:bg-accent cursor-pointer transition-colors',
-                selectedId === conversation.id && 'bg-accent'
+                'group relative rounded-lg p-2 hover:bg-accent/70 cursor-pointer transition-all duration-150 touch-manipulation border',
+                selectedId === conversation.id 
+                  ? 'bg-primary/10 border-primary/20 shadow-sm' 
+                  : 'bg-transparent border-transparent hover:border-border/30'
               )}
               onClick={() => setSelectedId(conversation.id)}
             >
-              <div className="flex items-start justify-between">
-                <div className="flex-1 space-y-1 overflow-hidden">
-                  <div className="flex items-center gap-2">
-                    <MessageSquare className="h-4 w-4 flex-shrink-0" />
-                    <h4 className="text-sm font-medium truncate">
-                      {conversation.title}
-                    </h4>
-                  </div>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {conversation.lastMessage}
-                  </p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Clock className="h-3 w-3" />
-                    <span>{formatDistanceToNow(conversation.timestamp, { addSuffix: true })}</span>
-                    <Badge variant="secondary" className="text-xs px-1 py-0">
-                      {conversation.messageCount}
-                    </Badge>
-                  </div>
+              {isCollapsed ? (
+                <div className="flex justify-center">
+                  <MessageSquare className="h-5 w-5 text-foreground/70" />
                 </div>
+              ) : (
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 space-y-1.5 overflow-hidden min-w-0">
+                    <div className="flex items-start gap-2">
+                      <MessageSquare className={cn(
+                        "h-4 w-4 flex-shrink-0 mt-0.5",
+                        selectedId === conversation.id ? "text-primary" : "text-muted-foreground/60"
+                      )} />
+                      <h4 className={cn(
+                        "text-sm font-semibold truncate leading-tight",
+                        selectedId === conversation.id ? "text-foreground" : "text-foreground/90"
+                      )}>
+                        {conversation.title}
+                      </h4>
+                    </div>
+                    <p className="text-xs text-muted-foreground/80 truncate leading-relaxed pl-6">
+                      {conversation.lastMessage.length > 60 
+                        ? conversation.lastMessage.substring(0, 60) + '...' 
+                        : conversation.lastMessage}
+                    </p>
+                    <div className="flex items-center justify-between pl-6">
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground/70">
+                        <Clock className="h-3 w-3 flex-shrink-0" />
+                        <span className="truncate">
+                          {mounted ? formatDistanceToNow(conversation.timestamp, { addSuffix: true }).replace('about ', '').replace(' ago', '') : '...'}
+                        </span>
+                      </div>
+                      <Badge 
+                        variant="secondary" 
+                        className="text-xs px-2 py-0.5 bg-muted/50 text-muted-foreground/80 font-medium"
+                      >
+                        {conversation.messageCount} msgs
+                      </Badge>
+                    </div>
+                  </div>
                 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 opacity-0 group-hover:opacity-100"
-                    >
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <Edit2 className="h-4 w-4 mr-2" />
-                      Rename
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      className="text-destructive"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleDelete(conversation.id)
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 hover:bg-accent"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-40">
+                      <DropdownMenuItem className="text-sm">
+                        <Edit2 className="h-4 w-4 mr-2" />
+                        Rename
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        className="text-destructive text-sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleDelete(conversation.id)
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              )}
             </div>
           ))}
         </div>
       </ScrollArea>
 
       {/* Footer */}
-      <div className="p-4 border-t">
-        <div className="text-xs text-muted-foreground space-y-1">
-          <div className="flex justify-between">
-            <span>Total conversations</span>
-            <span className="font-medium">{conversations.length}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Storage used</span>
-            <span className="font-medium">124 MB</span>
+      {!isCollapsed && (
+        <div className="p-3 border-t border-border/20 bg-muted/20">
+          <div className="text-xs text-muted-foreground/70 space-y-1.5">
+            <div className="flex justify-between items-center">
+              <span className="font-medium">Conversations</span>
+              <span className="font-semibold text-foreground/80">{conversations.length}</span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

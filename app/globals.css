@@ -2,6 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Syntax highlighting for code blocks */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css');
+
+/* Custom markdown styling for chat messages */
+.chat-markdown {
+  @apply text-sm;
+}
+
+.chat-markdown h1,
+.chat-markdown h2,
+.chat-markdown h3,
+.chat-markdown h4,
+.chat-markdown h5,
+.chat-markdown h6 {
+  @apply font-semibold text-foreground;
+}
+
+.chat-markdown code {
+  @apply bg-muted text-muted-foreground px-1 py-0.5 rounded text-xs font-mono;
+}
+
+.chat-markdown pre {
+  @apply bg-muted p-3 rounded-md overflow-x-auto my-3;
+}
+
+.chat-markdown pre code {
+  @apply bg-transparent p-0 text-xs;
+}
+
+.chat-markdown ul,
+.chat-markdown ol {
+  @apply my-2 space-y-1;
+}
+
+.chat-markdown li {
+  @apply text-sm;
+}
+
+.chat-markdown blockquote {
+  @apply border-l-2 border-primary/30 pl-3 italic my-2;
+}
+
+.chat-markdown table {
+  @apply w-full border-collapse border border-border rounded-md my-3;
+}
+
+.chat-markdown th,
+.chat-markdown td {
+  @apply border border-border px-3 py-2 text-left;
+}
+
+.chat-markdown th {
+  @apply bg-muted font-medium;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -111,4 +166,26 @@
 
 .animate-pulse-scale {
   animation: pulse-scale 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }

@@ -29,11 +29,6 @@ const sidebarItems = [
     icon: Users,
   },
   {
-    title: 'Analytics',
-    href: '/admin/analytics',
-    icon: BarChart3,
-  },
-  {
     title: 'Settings',
     href: '/settings',
     icon: Settings,
@@ -49,38 +44,60 @@ export function Sidebar({ className }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false)
 
   return (
-    <div className={cn('relative flex h-full flex-col border-r bg-background', className)}>
+    <div className={cn(
+      'relative flex h-full flex-col border-r bg-background transition-all duration-300 ease-in-out', 
+      collapsed ? 'w-16' : 'w-64',
+      className
+    )}>
       <div className="flex h-16 items-center justify-between border-b px-4">
-        <Link href="/" className="flex items-center space-x-2">
-          <Globe className="h-6 w-6 text-primary" />
-          {!collapsed && <span className="font-semibold">VenConnect</span>}
+        <Link href="/" className="flex items-center space-x-2 min-w-0">
+          <Globe className="h-6 w-6 text-primary flex-shrink-0" />
+          <span className={cn(
+            "font-semibold whitespace-nowrap transition-opacity duration-200",
+            collapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"
+          )}>
+            VenConnect
+          </span>
         </Link>
         <Button
           variant="ghost"
           size="icon"
-          className="hidden lg:flex"
+          className="hidden lg:flex flex-shrink-0"
           onClick={() => setCollapsed(!collapsed)}
         >
-          <ChevronLeft className={cn('h-4 w-4 transition-transform', collapsed && 'rotate-180')} />
+          <ChevronLeft className={cn('h-4 w-4 transition-transform duration-200', collapsed && 'rotate-180')} />
         </Button>
       </div>
       <ScrollArea className="flex-1 px-3">
         <div className="space-y-1 py-4">
           {sidebarItems.map((item) => (
-            <Button
-              key={item.href}
-              variant={pathname === item.href ? 'secondary' : 'ghost'}
-              className={cn(
-                'w-full justify-start',
-                collapsed && 'justify-center px-2'
+            <div key={item.href} className="relative group">
+              <Button
+                variant={pathname === item.href ? 'secondary' : 'ghost'}
+                className={cn(
+                  'w-full transition-all duration-200',
+                  collapsed ? 'justify-center px-2' : 'justify-start'
+                )}
+                asChild
+              >
+                <Link href={item.href}>
+                  <item.icon className={cn('h-4 w-4 flex-shrink-0', !collapsed && 'mr-2')} />
+                  <span className={cn(
+                    "whitespace-nowrap transition-opacity duration-200",
+                    collapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"
+                  )}>
+                    {item.title}
+                  </span>
+                </Link>
+              </Button>
+              
+              {/* Tooltip for collapsed state */}
+              {collapsed && (
+                <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 bg-popover text-popover-foreground text-sm rounded-md shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 whitespace-nowrap">
+                  {item.title}
+                </div>
               )}
-              asChild
-            >
-              <Link href={item.href}>
-                <item.icon className={cn('h-4 w-4', !collapsed && 'mr-2')} />
-                {!collapsed && <span>{item.title}</span>}
-              </Link>
-            </Button>
+            </div>
           ))}
         </div>
       </ScrollArea>

@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { MessageSquare, Globe, Shield, Zap } from 'lucide-react'
+import Link from 'next/link'
 
 export default function Home() {
   return (
@@ -70,9 +71,11 @@ export default function Home() {
         </div>
 
         <div className="text-center">
-          <Button size="lg" className="mr-4">
-            Get Started
-          </Button>
+          <Link href="/chat">
+            <Button size="lg" className="mr-4">
+              Get Started
+            </Button>
+          </Link>
           <Button size="lg" variant="outline">
             View Documentation
           </Button>
