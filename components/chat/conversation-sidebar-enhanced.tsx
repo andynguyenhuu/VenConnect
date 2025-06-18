@@ -224,7 +224,7 @@ export function ConversationSidebarEnhanced({
         
         <div className="flex gap-2">
           <Button 
-            className="flex-1 justify-start text-sm h-9 font-medium" 
+            className="flex-1 justify-start text-sm h-9 font-medium interactive-element" 
             onClick={handleNewConversation}
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -233,7 +233,7 @@ export function ConversationSidebarEnhanced({
           <Button
             variant="outline"
             size="sm"
-            className="h-9 px-3"
+            className="h-9 px-3 interactive-element"
             onClick={() => setBulkMode(!bulkMode)}
           >
             {bulkMode ? 'Done' : 'Select'}
@@ -269,7 +269,7 @@ export function ConversationSidebarEnhanced({
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 text-sm h-9 bg-background/50 border-border/40 focus:border-primary/50"
+            className="pl-9 text-sm h-9 interactive-element focus:border-primary"
           />
         </div>
       </div>
@@ -299,9 +299,9 @@ export function ConversationSidebarEnhanced({
                 }
                 
                 return (
-                  <div key={groupName} className="space-y-1">
-                    <div className="px-3 py-2">
-                      <h3 className="text-xs font-semibold text-muted-foreground/80 uppercase tracking-wider">
+                  <div key={groupName} className="conversation-group">
+                    <div className="conversation-group-header px-3 py-2">
+                      <h3 className="text-xs font-semibold text-high-contrast uppercase tracking-wider">
                         {groupLabels[groupName as keyof typeof groupLabels]}
                       </h3>
                     </div>
@@ -437,15 +437,15 @@ function ConversationItem({
               </DropdownMenu>
             )}
           </div>
-          <p className="text-xs text-muted-foreground/80 line-clamp-2 leading-relaxed break-words pr-2">
+          <p className="text-xs text-medium-contrast line-clamp-2 leading-relaxed break-words pr-2">
             {conversation.lastMessage}
           </p>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1 text-xs text-muted-foreground/70">
+            <div className="flex items-center gap-1 text-xs text-low-contrast">
               <Clock className="h-3 w-3" />
               <span>{mounted ? formatDistanceToNow(conversation.timestamp, { addSuffix: true }) : '...'}</span>
             </div>
-            <Badge variant="secondary" className="text-xs px-2 py-0.5">
+            <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-muted/50 text-medium-contrast">
               {conversation.messageCount} msgs
             </Badge>
           </div>
@@ -481,17 +481,17 @@ function ConversationItem({
               isSelected ? "text-primary" : "text-muted-foreground/60"
             )} />
             <h4 className={cn(
-              "text-sm font-semibold truncate leading-tight flex-1 min-w-0",
-              isSelected ? "text-foreground" : "text-foreground/90"
+              "text-sm font-semibold leading-tight flex-1 min-w-0 pr-2",
+              isSelected ? "text-high-contrast" : "text-foreground"
             )}>
-              {conversation.title}
+              <span className="block truncate">{conversation.title}</span>
             </h4>
           </div>
-          <p className="text-xs text-muted-foreground/80 leading-relaxed pl-6 pr-2 line-clamp-2 break-words">
+          <p className="text-xs text-medium-contrast leading-relaxed pl-6 pr-4 line-clamp-2 break-words overflow-hidden">
             {conversation.lastMessage}
           </p>
           <div className="flex items-center justify-between pl-6">
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground/70">
+            <div className="flex items-center gap-1.5 text-xs text-low-contrast">
               <Clock className="h-3 w-3 flex-shrink-0" />
               <span className="truncate">
                 {mounted ? formatDistanceToNow(conversation.timestamp, { addSuffix: true }).replace('about ', '').replace(' ago', '') : '...'}
@@ -499,7 +499,7 @@ function ConversationItem({
             </div>
             <Badge 
               variant="secondary" 
-              className="text-xs px-2 py-0.5 bg-muted/50 text-muted-foreground/80 font-medium"
+              className="text-xs px-2 py-0.5 bg-muted/50 text-medium-contrast font-medium flex-shrink-0"
             >
               {conversation.messageCount} msgs
             </Badge>
