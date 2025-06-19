@@ -58,7 +58,7 @@ const config: Config = {
         },
         vietnam: {
           primary: "#dc2626", // Red
-          accent: "#eab308", // Yellow
+          accent: "#10b981", // Green instead of yellow
         },
       },
       borderRadius: {

@@ -152,8 +152,8 @@ export function CostTracker() {
               )}
             </div>
             <div className="flex items-center text-xs text-muted-foreground mt-1">
-              <TrendingUp className="h-3 w-3 mr-1 text-yellow-500" />
-              <span className="text-yellow-500">+15%</span>
+              <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
+              <span className="text-green-500">+15%</span>
               <span className="ml-1">estimated</span>
             </div>
           </CardContent>
