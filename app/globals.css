@@ -67,7 +67,7 @@
     --font-mono: ui-monospace, 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
     
     /* Enhanced Light Mode Colors */
-    --background: var(--bg-primary-solid);
+    --background: 248 249 251;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
@@ -88,13 +88,7 @@
     --ring: 240 5.9% 10%;
     --radius: 0.5rem;
     
-    /* Light Mode Gradient Background */
-    --bg-primary: linear-gradient(180deg, 
-      #f8f9fb 0%,           /* Very light blue-gray at top */
-      #fdf8f6 50%,          /* Neutral light tone in middle */
-      #fef7f0 100%          /* Subtle warm peach at bottom */
-    );
-    --bg-primary-solid: #fafbfc;  /* Alternative single-color fallback */
+    /* Light Mode Gradient Background (applied directly to components) */
     
     /* Extended Color Palette */
     --success: 142 76% 36%;
@@ -501,7 +495,11 @@
   .app-container,
   .main-background,
   body {
-    background: var(--bg-primary);
+    background: linear-gradient(180deg, 
+      #f8f9fb 0%,           /* Very light blue-gray at top */
+      #fdf8f6 50%,          /* Neutral light tone in middle */
+      #fef7f0 100%          /* Subtle warm peach at bottom */
+    );
     min-height: 100vh;
   }
 
