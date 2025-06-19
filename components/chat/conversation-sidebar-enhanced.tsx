@@ -38,7 +38,7 @@ const mockConversations: Conversation[] = [
   {
     id: '1',
     title: 'Project Architecture Discussion',
-    lastMessage: 'The microservices approach would be ideal for scalability. We should consider implementing event-driven architecture with proper message queues.',
+    lastMessage: 'Docker container implementation discussion',
     timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 mins ago
     messageCount: 24,
     model: 'claude-4-sonnet',
@@ -46,7 +46,7 @@ const mockConversations: Conversation[] = [
   {
     id: '2',
     title: 'Vietnam Market Analysis',
-    lastMessage: 'Based on the data, the Vietnamese market shows significant growth potential in the tech sector, particularly in mobile applications.',
+    lastMessage: 'Market projections and adoption rates review',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
     messageCount: 18,
     model: 'claude-4-sonnet',
@@ -54,7 +54,7 @@ const mockConversations: Conversation[] = [
   {
     id: '3',
     title: 'Code Review: Authentication',
-    lastMessage: 'The Auth0 implementation looks good, but we should add rate limiting and implement proper session management for security.',
+    lastMessage: '2FA implementation for admin accounts',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
     messageCount: 42,
     model: 'claude-4-sonnet',
@@ -62,7 +62,7 @@ const mockConversations: Conversation[] = [
   {
     id: '4',
     title: 'Database Schema Design',
-    lastMessage: 'The proposed schema handles relationships well. Consider adding indexes on frequently queried columns.',
+    lastMessage: 'Schema optimization and indexing strategies',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
     messageCount: 15,
     model: 'claude-4-sonnet',
@@ -70,7 +70,7 @@ const mockConversations: Conversation[] = [
   {
     id: '5',
     title: 'API Documentation Review',
-    lastMessage: 'Documentation is comprehensive. Add more examples for complex endpoints and error handling scenarios.',
+    lastMessage: 'Documentation enhancement and error handling',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 8), // 8 days ago
     messageCount: 33,
     model: 'claude-4-sonnet',
@@ -134,6 +134,7 @@ export function ConversationSidebarEnhanced({
       }
     })
     
+    
     return groups
   }
 
@@ -182,9 +183,9 @@ export function ConversationSidebarEnhanced({
   // Dynamic width based on settings
   const getWidth = () => {
     switch (width) {
-      case 'narrow': return "w-60"
-      case 'wide': return "w-80"
-      default: return "w-72"
+      case 'narrow': return "w-80"
+      case 'wide': return "w-[28rem]"
+      default: return "w-96"
     }
   }
 
@@ -394,13 +395,19 @@ function ConversationItem({
   mounted 
 }: ConversationItemProps) {
   
-  // Dynamic padding based on density
+  // Dynamic padding based on density with consistent card heights
   const getPadding = () => {
     switch (density) {
-      case 'compact': return 'p-1.5'
-      case 'spacious': return 'p-3'
-      default: return 'p-2'
+      case 'compact': return 'p-3 min-h-[72px]'
+      case 'spacious': return 'p-4 min-h-[96px]'
+      default: return 'p-3 min-h-[88px]'
     }
+  }
+
+  // Standardized preview text function
+  const getStandardizedPreview = (text: string) => {
+    if (!text) return "No preview available"
+    return text
   }
 
   // Card view for different view modes
@@ -417,9 +424,9 @@ function ConversationItem({
             {bulkMode && (
               <Checkbox checked={isChecked} onCheckedChange={onToggleCheck} className="w-4 h-4" />
             )}
-            <div className="flex items-center gap-2 flex-1 min-w-0">
+            <div className="flex items-center gap-2 conversation-content">
               <MessageSquare className="h-4 w-4 text-muted-foreground/60 flex-shrink-0" />
-              <h4 className="text-sm font-semibold truncate flex-1 min-w-0">{conversation.title}</h4>
+              <h4 className="conversation-title text-sm font-semibold">{conversation.title}</h4>
             </div>
             {!bulkMode && (
               <DropdownMenu>
@@ -437,17 +444,15 @@ function ConversationItem({
               </DropdownMenu>
             )}
           </div>
-          <p className="text-xs text-medium-contrast line-clamp-2 leading-relaxed break-words pr-2">
-            {conversation.lastMessage}
+          <p className="conversation-preview text-sm text-muted-foreground line-clamp-2 mb-2">
+            {getStandardizedPreview(conversation.lastMessage)}
           </p>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1 text-xs text-low-contrast">
-              <Clock className="h-3 w-3" />
-              <span>{mounted ? formatDistanceToNow(conversation.timestamp, { addSuffix: true }) : '...'}</span>
-            </div>
-            <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-muted/50 text-medium-contrast">
-              {conversation.messageCount} msgs
-            </Badge>
+          <div className="conversation-metadata flex items-center gap-2 text-xs text-muted-foreground">
+            <MessageSquare className="h-3 w-3" />
+            <span>{conversation.messageCount} messages</span>
+            <span>•</span>
+            <Clock className="h-3 w-3" />
+            <span>{mounted ? formatDistanceToNow(conversation.timestamp, { addSuffix: true }) : '...'}</span>
           </div>
         </div>
       </div>
@@ -462,7 +467,7 @@ function ConversationItem({
       )}
       onClick={bulkMode ? onToggleCheck : onSelect}
     >
-      <div className="flex items-start justify-between gap-2">
+      <div className="flex items-start gap-2 w-full overflow-hidden min-w-0 max-w-full">
         {bulkMode && (
           <div className="flex items-center pt-1">
             <Checkbox
@@ -474,35 +479,38 @@ function ConversationItem({
           </div>
         )}
         
-        <div className="flex-1 space-y-1.5 overflow-hidden min-w-0">
-          <div className="flex items-start gap-2">
-            <MessageSquare className={cn(
-              "h-4 w-4 flex-shrink-0 mt-0.5",
-              isSelected ? "text-primary" : "text-muted-foreground/60"
-            )} />
-            <h4 className={cn(
-              "text-sm font-semibold leading-tight flex-1 min-w-0 pr-2",
-              isSelected ? "text-high-contrast" : "text-foreground"
-            )}>
-              <span className="block truncate">{conversation.title}</span>
-            </h4>
-          </div>
-          <p className="text-xs text-medium-contrast leading-relaxed pl-6 pr-4 line-clamp-2 break-words overflow-hidden">
-            {conversation.lastMessage}
-          </p>
-          <div className="flex items-center justify-between pl-6">
-            <div className="flex items-center gap-1.5 text-xs text-low-contrast">
-              <Clock className="h-3 w-3 flex-shrink-0" />
-              <span className="truncate">
-                {mounted ? formatDistanceToNow(conversation.timestamp, { addSuffix: true }).replace('about ', '').replace(' ago', '') : '...'}
-              </span>
+        <div className="flex-1 min-w-0 space-y-2 max-w-full overflow-hidden">
+          {/* Main title row with clear hierarchy */}
+          <div className="flex items-start justify-between gap-3 min-w-0">
+            <div className="flex items-start gap-3 flex-1 min-w-0">
+              <MessageSquare className={cn(
+                "h-4 w-4 flex-shrink-0 mt-0.5",
+                isSelected ? "text-primary" : "text-muted-foreground/60"
+              )} />
+              <div className="flex-1 min-w-0">
+                <h4 className={cn(
+                  "conversation-title text-sm font-semibold leading-tight",
+                  isSelected ? "text-foreground" : "text-foreground/90"
+                )}>
+                  {conversation.title}
+                </h4>
+              </div>
             </div>
-            <Badge 
-              variant="secondary" 
-              className="text-xs px-2 py-0.5 bg-muted/50 text-medium-contrast font-medium flex-shrink-0"
-            >
-              {conversation.messageCount} msgs
-            </Badge>
+          </div>
+          
+          {/* Standardized preview text */}
+          <div className="pl-7">
+            <p className="conversation-preview text-sm text-muted-foreground line-clamp-2 mb-2">
+              {getStandardizedPreview(conversation.lastMessage)}
+            </p>
+            {/* Single line metadata */}
+            <div className="conversation-metadata flex items-center gap-2 text-xs text-muted-foreground">
+              <MessageSquare className="h-3 w-3" />
+              <span>{conversation.messageCount} messages</span>
+              <span>•</span>
+              <Clock className="h-3 w-3" />
+              <span>{mounted ? formatDistanceToNow(conversation.timestamp, { addSuffix: true }) : '...'}</span>
+            </div>
           </div>
         </div>
         
