@@ -43,7 +43,7 @@ function HighlightedText({ text, searchTerm }: { text: string; searchTerm: strin
     <span>
       {parts.map((part, index) => 
         regex.test(part) ? (
-          <mark key={index} className="bg-yellow-200 dark:bg-yellow-800 text-foreground px-1 rounded">
+          <mark key={index} className="bg-primary/10 dark:bg-primary/20 text-foreground px-1 rounded">
             {part}
           </mark>
         ) : (
@@ -455,7 +455,10 @@ export function ChatInterface({ conversationId }: ChatInterfaceProps) {
   // Scroll to bottom on new messages
   useEffect(() => {
     if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight
+      const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]')
+      if (viewport) {
+        viewport.scrollTop = viewport.scrollHeight
+      }
     }
   }, [messages])
 
@@ -790,106 +793,98 @@ How can I assist you today?`
               key={message.id}
               ref={(el) => { messageRefs.current[index] = el }}
               className={cn(
-                'group flex gap-2 md:gap-3 px-2 md:px-0',
-                message.role === 'user' ? 'justify-end' : 'justify-start',
+                'group px-2 md:px-0 mb-6',
                 searchResults.includes(index) && searchInChat && (
                   searchResults[currentSearchIndex] === index
-                    ? 'bg-yellow-200/50 dark:bg-yellow-800/30 rounded-lg p-2 border border-yellow-300 dark:border-yellow-700'
-                    : 'bg-yellow-100/30 dark:bg-yellow-900/20 rounded-lg p-2 border border-yellow-200/50 dark:border-yellow-800/50'
+                    ? 'bg-primary/10 dark:bg-primary/20 rounded-lg p-2 border border-primary/30 dark:border-primary/40'
+                    : 'bg-muted/50 dark:bg-muted/30 rounded-lg p-2 border border-muted/50 dark:border-muted/60'
                 )
               )}
             >
-              <Avatar className="w-8 h-8 md:w-10 md:h-10 flex-shrink-0 order-first">
-                <AvatarFallback className={cn(
-                  message.role === 'user' ? 'bg-primary/10 text-primary' : 'bg-secondary text-secondary-foreground'
-                )}>
-                  {message.role === 'user' ? <User className="h-3 w-3 md:h-4 md:w-4" /> : <Bot className="h-3 w-3 md:h-4 md:w-4" />}
-                </AvatarFallback>
-              </Avatar>
-              
-              <div className={cn(
-                'space-y-1 md:space-y-2 min-w-0',
-                message.role === 'user' ? 'max-w-[80%] md:max-w-[70%]' : 'max-w-[85%] md:max-w-[80%]'
-              )}>
-                <Card className={cn(
-                  'p-4 shadow-sm transition-theme',
-                  message.role === 'user' 
-                    ? 'chat-message-user ml-auto' 
-                    : 'chat-message-assistant border'
-                )}>
-                  <div className={cn(
-                    'max-w-none leading-relaxed',
-                    message.role === 'user' 
-                      ? 'text-primary-foreground' 
-                      : 'text-foreground'
-                  )}>
+              {message.role === 'user' ? (
+                /* User Message - Right aligned with distinct styling */
+                <div className="flex justify-end">
+                  <div className="max-w-[80%] md:max-w-[70%]">
+                    <div className="chat-message-user p-4 rounded-2xl shadow-sm transition-theme">
+                      <div className="text-sm leading-relaxed text-primary-foreground">
+                        <HighlightedText 
+                          text={message.content} 
+                          searchTerm={searchInChat}
+                        />
+                      </div>
+                      {message.tokens && (
+                        <div className="flex items-center gap-2 mt-2 text-xs text-primary-foreground/70">
+                          <span>{message.tokens} tokens</span>
+                          <span>•</span>
+                          <span>${message.cost?.toFixed(4)} AUD</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="flex justify-end items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 md:h-8 md:w-8 hover:bg-background/10"
+                        onClick={() => handleCopy(message.content)}
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 md:h-8 md:w-8 hover:bg-background/10"
+                        onClick={() => handleRetry(message.id)}
+                      >
+                        <RotateCcw className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* AI Response - Clean, no avatars or labels */
+                <div className="max-w-none">
+                  <div className="prose prose-neutral dark:prose-invert max-w-none">
                     {message.content ? (
-                      message.role === 'assistant' ? (
-                        <div className="chat-markdown">
-                          <MarkdownWithHighlight 
-                            content={message.content} 
-                            searchTerm={searchInChat}
-                          />
-                        </div>
-                      ) : (
-                        <div className="text-sm">
-                          <HighlightedText 
-                            text={message.content} 
-                            searchTerm={searchInChat}
-                          />
-                        </div>
-                      )
+                      <div className="chat-markdown text-foreground leading-relaxed">
+                        <MarkdownWithHighlight 
+                          content={message.content} 
+                          searchTerm={searchInChat}
+                        />
+                      </div>
                     ) : (
                       <Skeleton className="h-4 w-24 md:w-32" />
                     )}
                   </div>
                   
                   {message.tokens && (
-                    <div className={cn(
-                      'flex items-center gap-2 mt-2 text-xs',
-                      message.role === 'user' 
-                        ? 'text-primary-foreground/70' 
-                        : 'text-muted-foreground'
-                    )}>
+                    <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground">
                       <span>{message.tokens} tokens</span>
                       <span>•</span>
                       <span>${message.cost?.toFixed(4)} AUD</span>
                     </div>
                   )}
-                </Card>
-                
-                <div className={cn(
-                  'flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity',
-                  message.role === 'user' ? 'justify-end' : 'justify-start'
-                )}>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 md:h-8 md:w-8 hover:bg-background/10"
-                    onClick={() => handleCopy(message.content)}
-                  >
-                    <Copy className="h-3 w-3" />
-                  </Button>
-                  {message.role === 'user' && (
+                  
+                  <div className="flex items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Button
                       variant="ghost"
                       size="icon"
                       className="h-6 w-6 md:h-8 md:w-8 hover:bg-background/10"
-                      onClick={() => handleRetry(message.id)}
+                      onClick={() => handleCopy(message.content)}
                     >
-                      <RotateCcw className="h-3 w-3" />
+                      <Copy className="h-3 w-3" />
                     </Button>
-                  )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           ))}
 
           {isLoading && messages[messages.length - 1]?.role === 'assistant' && (
             <div className="flex items-center justify-center py-4">
-              <div className="flex items-center gap-3 text-sm text-muted-foreground bg-muted/50 rounded-full px-4 py-2">
+              <div className="flex items-center gap-3 text-sm text-muted-foreground bg-muted/30 rounded-full px-4 py-2">
                 <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                <span className="font-medium">Claude is thinking</span>
+                <span className="font-medium">Thinking...</span>
                 <div className="flex gap-1">
                   <div className="w-1 h-1 bg-current rounded-full animate-pulse"></div>
                   <div className="w-1 h-1 bg-current rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
@@ -969,7 +964,7 @@ How can I assist you today?`
             
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
-                <span className="hidden sm:inline">Claude 4 Sonnet via Replicate API</span>
+                <span className="hidden sm:inline">Powered by Claude 4 Sonnet</span>
                 <span className="sm:hidden">Claude 4 Sonnet</span>
                 {isLoading && (
                   <>

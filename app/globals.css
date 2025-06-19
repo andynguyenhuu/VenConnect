@@ -206,12 +206,18 @@
   }
   
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background: linear-gradient(180deg, 
+      #f8f9fb 0%,           /* Very light blue-gray at top */
+      #fdf8f6 50%,          /* Neutral light tone in middle */
+      #fef7f0 100%          /* Subtle warm peach at bottom */
+    );
     font-family: var(--font-sans);
     font-feature-settings: "rlig" 1, "calt" 1, "kern" 1;
     font-variation-settings: "wght" 400;
     line-height: 1.5;
     letter-spacing: -0.011em;
+    min-height: 100vh;
   }
   
   /* Typography Scale */
