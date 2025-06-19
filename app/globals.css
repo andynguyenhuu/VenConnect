@@ -67,7 +67,7 @@
     --font-mono: ui-monospace, 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
     
     /* Enhanced Light Mode Colors */
-    --background: 0 0% 100%;
+    --background: var(--bg-primary-solid);
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
@@ -87,6 +87,14 @@
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
     --radius: 0.5rem;
+    
+    /* Light Mode Gradient Background */
+    --bg-primary: linear-gradient(180deg, 
+      #f8f9fb 0%,           /* Very light blue-gray at top */
+      #fdf8f6 50%,          /* Neutral light tone in middle */
+      #fef7f0 100%          /* Subtle warm peach at bottom */
+    );
+    --bg-primary-solid: #fafbfc;  /* Alternative single-color fallback */
     
     /* Extended Color Palette */
     --success: 142 76% 36%;
@@ -487,6 +495,28 @@
   .conversation-item.spacious {
     min-height: 96px;
     padding: 1rem;
+  }
+
+  /* Main Application Background - Gradient Implementation */
+  .app-container,
+  .main-background,
+  body {
+    background: var(--bg-primary);
+    min-height: 100vh;
+  }
+
+  /* Semi-transparent overlays for layered elements */
+  .sidebar,
+  .conversation-list {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+  }
+
+  /* Pure white for cards and elevated elements */
+  .conversation-item,
+  .message-bubble,
+  .input-field {
+    background: #ffffff;
   }
   
   /* Chat Container Component */

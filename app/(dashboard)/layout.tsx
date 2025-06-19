@@ -17,16 +17,16 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="app-container flex h-screen overflow-hidden">
       {/* Desktop Sidebar - Dynamic width handled by the Sidebar component itself */}
-      <aside className="hidden lg:flex lg:flex-col lg:flex-shrink-0 border-r bg-card">
+      <aside className="sidebar hidden lg:flex lg:flex-col lg:flex-shrink-0 border-r">
         <Sidebar />
       </aside>
 
       {/* Main Content */}
       <div className="flex flex-1 flex-col overflow-hidden min-w-0">
         <Header user={user} />
-        <main className="flex-1 overflow-hidden bg-background">
+        <main className="main-background flex-1 overflow-hidden">
           {children}
         </main>
       </div>
